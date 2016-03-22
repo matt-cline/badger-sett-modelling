@@ -25,18 +25,37 @@ var indexI = function(settID) {
 //checks if over STOP/GO button
 var isInsideButton1 = function(x, y) {
 	return x >= width + 14 && x <= width + 98 &&
-		   y >= height/2 + 43 && y <= height/2 + 77;
+	       y >= height/2 + 43 && y <= height/2 + 77;
+};
+
+var isInsideButton2 = function(x,y) {
+	return x >= width + 14 && x <= width + 98 &&
+	       y >= height/2 + 83 && y <= height/2 + 117;
 };
 
 var updateNeighs = function(setts, i) {
     var tempSetts = setts;
 	if (setts[i].state === 's') {
-	    if (setts[i].xloc !== n ) {tempSetts[i+1].neigh += 1;}
+		if (setts[i].xloc !== n ) {tempSetts[i+1].neigh += 1;}
 		if (setts[i].xloc !== 1 ) {tempSetts[i-1].neigh += 1;}
 		if (setts[i].yloc !== n ) {tempSetts[i+n].neigh += 1;}
 		if (setts[i].yloc !== 1 ) {tempSetts[i-n].neigh += 1;}
 	}
 	return tempSetts;
+};
+
+var randomSetts = function(setts) {
+	for (var i = 0; i < nsq; i++) {
+		num = random(0,1);
+		if(num < 0.25) {
+			setts[i].state = 'p';
+		} else if (num < 0.5) {
+			setts[i].state = 's';
+		} else {
+			setts[i].state = 'u';
+		}
+	}
+	return setts;
 };
 
 /* A sett has an ID number from 1 to n^2, corresponding to the 
@@ -81,13 +100,8 @@ Sett.prototype.checkBox = function(x, y) {
 setts1 = new Array(nsq);
 for (var i = 0; i < nsq; i++) {
     setts1[i] = new Sett(i);
-	num = random(0,1);
-	if(num < 0.25) {
-		setts1[i].state = 'p';
-	} else if (num < 0.5) {
-		setts1[i].state = 's';
-	}
 }
+setts1 = randomSetts(setts1);
 
 void setup() {
 	size(width+102,height+2);
@@ -109,6 +123,12 @@ void mousePressed() {
 		run++;
 		run %= 2;
 		//run takes value 1 or 0
+	} 
+	if (isInsideButton2(mouseX,mouseY)) {
+		run = 0;
+		N = 0;
+		frameCount = 0;
+		setts1 = randomSetts(setts1);
 	}
 };
 
@@ -117,8 +137,8 @@ void draw() {
 	rectMode(CORNER);
 	fill(white);
 	rect(1,1,width,height);
-	rect(width+11, height/2 - 110, 90, 140);
-	rect(width+11, height/2 + 40, 90, 40);
+	rect(width+11, height/2 - 110, 90, 140); //info box
+	rect(width+11, height/2 + 40, 90, 80); //button box
 	fill(black);
 	textSize(11);
 	text(frameCount, width+12, height/2 - 100);
@@ -127,15 +147,18 @@ void draw() {
 	text("U = " + U, width+12, height/2 - 70);
 	text("P = " + P, width+12, height/2 - 60);
 	text("S = " + S, width+12, height/2 - 50);
+	fill(grey);
+	rect(width+14, height/2 + 83, 84, 34); //reset button
 	if(run === 1){
 		fill(black);
 	} else {
 		fill(grey);
 	}
-	rect(width+14, height/2 + 43, 84, 34);
+	rect(width+14, height/2 + 43, 84, 34); //stop/go button
 	fill(white);
 	textSize(17);
-	text("STOP/GO",width+17,height/2+67);
+	text("STOP/GO", width + 17, height/2 + 67);
+	text("RESET", width + 18, height/2 + 107);
 	//reset neighbours
 	for (var i = 0; i < nsq; i++) {
         setts1[i].neigh = 0;
@@ -144,13 +167,13 @@ void draw() {
 	//update neighbours based on saturated
     	for (var i = 0; i < nsq; i++) {
         	setts1 = updateNeighs(setts1, i);
-			if (setts1[i].state === 'u') {
-				U++;
-			} else if(setts1[i].state === 'p') {
-				P++;
-			} else {
-				S++;
-			}
+		if (setts1[i].state === 'u') {
+			U++;
+		} else if(setts1[i].state === 'p') {
+			P++;
+		} else {
+			S++;
+		}
     	}
 	//if we are running the simulation, this is where the maths is
 	if (run === 1 && (frameCount % 10) === 0) {
