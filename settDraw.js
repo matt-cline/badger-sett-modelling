@@ -1,27 +1,29 @@
 var width = 800;
 var height = width;
-var n = 10;
-var nsq = n * n;
-var margin = 100/n;
+var n = 10; 	 	//default value for number of rows/columns
+var nsq = n * n; 	//used often, equivalent to T, total number of setts
+var margin = 100/n;	//space between setts
 var boxSize = (width - (n+1)*margin)/n;
-var run = 0;
-var p = 0.25, lambda = 0.25, nu = 0.5;
-var kappa = 0.1452, sigma = 0.1581;
-var num = 0;
-var N; //years 
-var U = 0, P = 0, S = 0;
+var run = 0;		//determines whether to update or not
+var p = 0.25, lambda = 0.25, nu = 0.5;	//default values
+var kappa = 0.1452, sigma = 0.1581;	//fixed values
+var num = 0;		//random number check
+var N; 			//years 
+var U = 0, P = 0, S = 0;//initial sett counters
 
 color white = color(255, 255, 255);
 color grey  = color(200, 200, 200);
 color black = color(  0,   0,   0);
 
+//when given the ID number, determines the row value
 var indexI = function(settID) {
 	var temp = settID % n;
 	if (temp === 0) {temp = n;}
 	return temp;
 };
 
-var isInsideButton = function(x, y) {
+//checks if over STOP/GO button
+var isInsideButton1 = function(x, y) {
 	return x >= width + 14 && x <= width + 98 &&
 		   y >= height/2 + 43 && y <= height/2 + 77;
 };
@@ -75,23 +77,6 @@ Sett.prototype.checkBox = function(x, y) {
 		   y >= ybox && y <= ybox + boxSize;
 };
 
-Sett.prototype.updateAll = function() {
-	for (var i = 0; i < nsq; i++) {
-		var num = random(0,1);
-		if (setts[i].state === 'u') {
-			var prob = p * nu * 0.25 * this.neigh;
-			if(num < prob) {
-				setts[i].state = 'p';
-			}
-		} else if (setts[i].state === 'p') {
-			var prob = lambda * p * nu * 0.25 * sigma * (1 - kappa) * this.neigh + kappa;
-			if(num < prob) {
-				setts[i].state = 's';
-			}
-		}
-	}
-}
-
 //generates n*n setts with location, 'u' state and 0 neighbours.
 setts1 = new Array(nsq);
 for (var i = 0; i < nsq; i++) {
@@ -103,10 +88,6 @@ for (var i = 0; i < nsq; i++) {
 		setts1[i].state = 's';
 	}
 }
-
-
-
-
 
 void setup() {
 	size(width+102,height+2);
@@ -124,9 +105,10 @@ void mousePressed() {
 			}
 		}
 	};
-	if (isInsideButton(mouseX,mouseY)) {
+	if (isInsideButton1(mouseX,mouseY)) {
 		run++;
 		run %= 2;
+		//run takes value 1 or 0
 	}
 };
 
@@ -158,19 +140,19 @@ void draw() {
 	for (var i = 0; i < nsq; i++) {
         setts1[i].neigh = 0;
 		U = 0, P = 0, S = 0;
-    }
+    	}
 	//update neighbours based on saturated
-    for (var i = 0; i < nsq; i++) {
-        setts1 = updateNeighs(setts1, i);
-		if (setts1[i].state === 'u') {
-			U++;
-		} else if(setts1[i].state === 'p') {
-			P++;
-		} else {
-			S++;
-		}
-    }
-	//if we are running the simulation
+    	for (var i = 0; i < nsq; i++) {
+        	setts1 = updateNeighs(setts1, i);
+			if (setts1[i].state === 'u') {
+				U++;
+			} else if(setts1[i].state === 'p') {
+				P++;
+			} else {
+				S++;
+			}
+    	}
+	//if we are running the simulation, this is where the maths is
 	if (run === 1 && (frameCount % 10) === 0) {
 		N++;
 		for (var i = 0; i < nsq; i++) {
@@ -190,8 +172,8 @@ void draw() {
 	}
 	//draw final
 	for (var i = 0; i < nsq; i++) {
-        setts1[i].drawSett();
-    }
+        	setts1[i].drawSett();
+    	}
 	fill(255, 0, 0);
 	textSize(30);
 	text("+",mouseX-8,mouseY+10);
