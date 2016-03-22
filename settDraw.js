@@ -25,7 +25,12 @@ var indexI = function(settID) {
 //checks if over STOP/GO button
 var isInsideButton1 = function(x, y) {
 	return x >= width + 14 && x <= width + 98 &&
-		   y >= height/2 + 43 && y <= height/2 + 77;
+	       y >= height/2 + 43 && y <= height/2 + 77;
+};
+
+var isInisdeButton2 = function(x,y) {
+	return x >= width + 14 && <= width + 98 &&
+	       y >= height/2 + 83 && y <= height/2 + 117;///not done
 };
 
 var updateNeighs = function(setts, i) {
@@ -117,8 +122,8 @@ void draw() {
 	rectMode(CORNER);
 	fill(white);
 	rect(1,1,width,height);
-	rect(width+11, height/2 - 110, 90, 140);
-	rect(width+11, height/2 + 40, 90, 40);
+	rect(width+11, height/2 - 110, 90, 140); //info box
+	rect(width+11, height/2 + 40, 90, 80); //button box
 	fill(black);
 	textSize(11);
 	text(frameCount, width+12, height/2 - 100);
@@ -127,15 +132,18 @@ void draw() {
 	text("U = " + U, width+12, height/2 - 70);
 	text("P = " + P, width+12, height/2 - 60);
 	text("S = " + S, width+12, height/2 - 50);
+	fill(grey);
+	rect(width+14, height/2 + 83, 84, 34); //reset button
 	if(run === 1){
 		fill(black);
 	} else {
 		fill(grey);
 	}
-	rect(width+14, height/2 + 43, 84, 34);
+	rect(width+14, height/2 + 43, 84, 34); //stop/go button
 	fill(white);
 	textSize(17);
 	text("STOP/GO",width+17,height/2+67);
+	text("RESET", width+18,height/2+27);
 	//reset neighbours
 	for (var i = 0; i < nsq; i++) {
         setts1[i].neigh = 0;
