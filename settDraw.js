@@ -29,7 +29,7 @@ var isInsideButton1 = function(x, y) {
 };
 
 var isInisdeButton2 = function(x,y) {
-	return x >= width + 14 && <= width + 98 &&
+	return x >= width + 14 && x <= width + 98 &&
 	       y >= height/2 + 83 && y <= height/2 + 117;///not done
 };
 
@@ -142,8 +142,8 @@ void draw() {
 	rect(width+14, height/2 + 43, 84, 34); //stop/go button
 	fill(white);
 	textSize(17);
-	text("STOP/GO",width+17,height/2+67);
-	text("RESET", width+18,height/2+27);
+	text("STOP/GO", width + 17, height/2 + 67);
+	text("RESET", width + 18, height/2 + 27);
 	//reset neighbours
 	for (var i = 0; i < nsq; i++) {
         setts1[i].neigh = 0;
@@ -152,13 +152,13 @@ void draw() {
 	//update neighbours based on saturated
     	for (var i = 0; i < nsq; i++) {
         	setts1 = updateNeighs(setts1, i);
-			if (setts1[i].state === 'u') {
-				U++;
-			} else if(setts1[i].state === 'p') {
-				P++;
-			} else {
-				S++;
-			}
+		if (setts1[i].state === 'u') {
+			U++;
+		} else if(setts1[i].state === 'p') {
+			P++;
+		} else {
+			S++;
+		}
     	}
 	//if we are running the simulation, this is where the maths is
 	if (run === 1 && (frameCount % 10) === 0) {
