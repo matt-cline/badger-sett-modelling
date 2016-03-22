@@ -51,6 +51,8 @@ var randomSetts = function(setts) {
 			setts[i].state = 'p';
 		} else if (num < 0.5) {
 			setts[i].state = 's';
+		} else {
+			setts[i].state = 'u';
 		}
 	}
 	return setts;
