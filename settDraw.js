@@ -30,13 +30,13 @@ var isInsideButton1 = function(x, y) {
 
 var isInisdeButton2 = function(x,y) {
 	return x >= width + 14 && x <= width + 98 &&
-	       y >= height/2 + 83 && y <= height/2 + 117;///not done
+	       y >= height/2 + 83 && y <= height/2 + 117;
 };
 
 var updateNeighs = function(setts, i) {
     var tempSetts = setts;
 	if (setts[i].state === 's') {
-	    if (setts[i].xloc !== n ) {tempSetts[i+1].neigh += 1;}
+		if (setts[i].xloc !== n ) {tempSetts[i+1].neigh += 1;}
 		if (setts[i].xloc !== 1 ) {tempSetts[i-1].neigh += 1;}
 		if (setts[i].yloc !== n ) {tempSetts[i+n].neigh += 1;}
 		if (setts[i].yloc !== 1 ) {tempSetts[i-n].neigh += 1;}
@@ -53,6 +53,7 @@ var randomSetts = function(setts) {
 			setts[i].state = 's';
 		}
 	}
+	return setts;
 };
 
 /* A sett has an ID number from 1 to n^2, corresponding to the 
@@ -97,7 +98,7 @@ Sett.prototype.checkBox = function(x, y) {
 setts1 = new Array(nsq);
 for (var i = 0; i < nsq; i++) {
     setts1[i] = new Sett(i);
-};
+}
 setts1 = randomSetts(setts1);
 
 void setup() {
