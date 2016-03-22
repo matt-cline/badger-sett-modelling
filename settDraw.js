@@ -44,6 +44,17 @@ var updateNeighs = function(setts, i) {
 	return tempSetts;
 };
 
+var randomSetts = function(setts) {
+	for (var i = 0; i < nsq; i++) {
+		num = random(0,1);
+		if(num < 0.25) {
+			setts[i].state = 'p';
+		} else if (num < 0.5) {
+			setts[i].state = 's';
+		}
+	}
+};
+
 /* A sett has an ID number from 1 to n^2, corresponding to the 
  * numbered setts in the n^2 square of setts. 'Sett' converts that
  * number into an i,j location.
@@ -86,13 +97,8 @@ Sett.prototype.checkBox = function(x, y) {
 setts1 = new Array(nsq);
 for (var i = 0; i < nsq; i++) {
     setts1[i] = new Sett(i);
-	num = random(0,1);
-	if(num < 0.25) {
-		setts1[i].state = 'p';
-	} else if (num < 0.5) {
-		setts1[i].state = 's';
-	}
-}
+};
+setts1 = randomSetts(setts1);
 
 void setup() {
 	size(width+102,height+2);
@@ -114,6 +120,11 @@ void mousePressed() {
 		run++;
 		run %= 2;
 		//run takes value 1 or 0
+	} else if (isInsideButton2(mouseX,mouseY)) {
+		run = 0;
+		N = 0;
+		frameCount = 0;
+		setts1 = randomSetts(setts1);
 	}
 };
 
@@ -143,7 +154,7 @@ void draw() {
 	fill(white);
 	textSize(17);
 	text("STOP/GO", width + 17, height/2 + 67);
-	text("RESET", width + 18, height/2 + 27);
+	text("RESET", width + 18, height/2 + 107);
 	//reset neighbours
 	for (var i = 0; i < nsq; i++) {
         setts1[i].neigh = 0;
