@@ -28,7 +28,7 @@ var isInsideButton1 = function(x, y) {
 	       y >= height/2 + 43 && y <= height/2 + 77;
 };
 
-var isInisdeButton2 = function(x,y) {
+var isInsideButton2 = function(x,y) {
 	return x >= width + 14 && x <= width + 98 &&
 	       y >= height/2 + 83 && y <= height/2 + 117;
 };
@@ -121,7 +121,8 @@ void mousePressed() {
 		run++;
 		run %= 2;
 		//run takes value 1 or 0
-	} else if (isInsideButton2(mouseX,mouseY)) {
+	} 
+	if (isInsideButton2(mouseX,mouseY)) {
 		run = 0;
 		N = 0;
 		frameCount = 0;
