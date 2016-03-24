@@ -1,19 +1,33 @@
 var width = 800;
 var height = width;
-var n = 10; 	 	//default value for number of rows/columns
-var nsq = n * n; 	//used often, equivalent to T, total number of setts
-var margin = 100/n;	//space between setts
-var boxSize = (width - (n+1)*margin)/n;
+
+var n = 10; //default value for number of rows/columns to be input
+var nsq; 	//used often, equivalent to T, total number of setts
+var margin; //space between setts
+var boxSize;
+var N;		//years
+setts1 = new Array();
+//note: all of the above are given values in 'initialise()'
+
 var run = 0;		//determines whether to update or not
 var p = 0.25, lambda = 0.25, nu = 0.5;	//default values
 var kappa = 0.1452, sigma = 0.1581;	//fixed values
 var num = 0;		//random number check
-var N; 			//years 
 var U = 0, P = 0, S = 0;//initial sett counters
 
 color white = color(255, 255, 255);
 color grey  = color(200, 200, 200);
 color black = color(  0,   0,   0);
+
+var initialise = function() {
+	run = 0, N = 0, frameCount = 0;
+	nsq = n * n, margin = 100/n;
+	boxSize = (width - (n+1)*margin)/n;
+	for (var i = 0; i < nsq; i++) {
+		setts1[i] = new Sett(i);
+	}
+	setts1 = randomSetts(setts1);
+};
 
 //when given the ID number, determines the row value
 var indexI = function(settID) {
@@ -22,16 +36,11 @@ var indexI = function(settID) {
 	return temp;
 };
 
-//checks if over STOP/GO button
-var isInsideButton1 = function(x, y) {
-	return x >= width + 14 && x <= width + 98 &&
-	       y >= height/2 + 43 && y <= height/2 + 77;
-};
-
-var isInsideButton2 = function(x,y) {
-	return x >= width + 14 && x <= width + 98 &&
-	       y >= height/2 + 83 && y <= height/2 + 117;
-};
+//function to check if mouse is inside given rectangular parameters
+var isInside = function(x, y, startX, startY, widthX, heightY) {
+	return x >= startX && x <= startX + widthX &&
+		   y >= startY && y <= startY + heightY;
+}
 
 var updateNeighs = function(setts, i) {
     var tempSetts = setts;
@@ -96,12 +105,8 @@ Sett.prototype.checkBox = function(x, y) {
 		   y >= ybox && y <= ybox + boxSize;
 };
 
-//generates n*n setts with location, 'u' state and 0 neighbours.
-setts1 = new Array(nsq);
-for (var i = 0; i < nsq; i++) {
-    setts1[i] = new Sett(i);
-}
-setts1 = randomSetts(setts1);
+//generates n*n setts with location, random state and 0 neighbours.
+initialise();
 
 void setup() {
 	size(width+102,height+2);
@@ -119,34 +124,86 @@ void mousePressed() {
 			}
 		}
 	};
-	if (isInsideButton1(mouseX,mouseY)) {
+	if (isInside(mouseX,mouseY,width+14, height/2 + 43, 84, 34)) {
+		//stop/go click
 		run++;
 		run %= 2;
 		//run takes value 1 or 0
 	} 
-	if (isInsideButton2(mouseX,mouseY)) {
+	if (isInside(mouseX,mouseY,width+14, height/2 + 83, 84, 34)) {
+		//reset click
 		run = 0;
 		N = 0;
 		frameCount = 0;
 		setts1 = randomSetts(setts1);
 	}
+	if (isInside(mouseX,mouseY,width+12, height/2 - 140, 20, 20)) {
+		//-- click
+		n -= 5;
+		if (n<2) {n=2;}
+		initialise();
+	}
+	if (isInside(mouseX,mouseY,width+34, height/2 - 140, 20, 20)) {
+		//- click
+		n--;
+		if (n<2) {n=2;}
+		initialise();
+	}
+	if (isInside(mouseX,mouseY,width+56, height/2 - 140, 20, 20)) {
+		//+ click
+		n++;
+		if (n>40) {n=40;}
+		initialise();
+	}
+	if (isInside(mouseX,mouseY,width+78, height/2 - 140, 20, 20)) {
+		//++ click
+		n += 5;
+		if (n>40) {n=40;}
+		initialise();
+	}
 };
 
 void draw() {
+	
 	background(white);
 	rectMode(CORNER);
 	fill(white);
-	rect(1,1,width,height);
+	rect(1,1,width,height); //outer canvas
+	
+	
 	rect(width+11, height/2 - 110, 90, 140); //info box
-	rect(width+11, height/2 + 40, 90, 80); //button box
+
+	rect(width+11, height/2 + 40, 90, 80); //lower button box
+	
+	rect(width+11, height/2 - 160, 90, 40); //upper control box
+	
+	//upper control buttons
+	/*
+	rect(width+12, height/2 - 140, 20, 20);
+	rect(width+34, height/2 - 140, 20, 20);
+	rect(width+56, height/2 - 140, 20, 20);
+	rect(width+78, height/2 - 140, 20, 20);
+	*/
+	
+	//info box inner
 	fill(black);
-	textSize(11);
-	text(frameCount, width+12, height/2 - 100);
-	text(N + " years", width+12, height/2 - 90);
-	text("T = " + nsq, width+12, height/2 - 80);
-	text("U = " + U, width+12, height/2 - 70);
-	text("P = " + P, width+12, height/2 - 60);
-	text("S = " + S, width+12, height/2 - 50);
+	textSize(14);
+	text(frameCount, width+13, height/2 - 95);
+	text(N + " years", width+13, height/2 - 80);
+	text("T = " + nsq, width+13, height/2 - 65);
+	text("U = " + U, width+13, height/2 - 50);
+	text("P = " + P, width+13, height/2 - 35);
+	text("S = " + S, width+13, height/2 - 20);
+	
+	text("n is " + n, width + 13, height/2 - 145);
+	textSize(25);
+	text("--", width+14, height/2 - 123);
+	text("-", width+40, height/2 - 123);
+	textSize(20);
+	text("+", width+61, height/2 - 123);
+	text("+", width+78, height/2 - 123);
+	text("+", width+88, height/2 - 123);
+	//lower button box inner	
 	fill(grey);
 	rect(width+14, height/2 + 83, 84, 34); //reset button
 	if(run === 1){
@@ -157,8 +214,9 @@ void draw() {
 	rect(width+14, height/2 + 43, 84, 34); //stop/go button
 	fill(white);
 	textSize(17);
-	text("STOP/GO", width + 17, height/2 + 67);
-	text("RESET", width + 18, height/2 + 107);
+	text("STOP/GO", width + 18, height/2 + 67);
+	text("RESET", width + 29, height/2 + 107);
+	
 	//reset neighbours
 	for (var i = 0; i < nsq; i++) {
         setts1[i].neigh = 0;
@@ -195,8 +253,8 @@ void draw() {
 	}
 	//draw final
 	for (var i = 0; i < nsq; i++) {
-        	setts1[i].drawSett();
-    	}
+        setts1[i].drawSett();
+    }
 	fill(255, 0, 0);
 	textSize(30);
 	text("+",mouseX-8,mouseY+10);
