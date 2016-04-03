@@ -1,6 +1,6 @@
 var width = 800;
 var height = width;
-
+//add blank button
 var n = 10; //default value for number of rows/columns to be input
 var nsq; 	//used often, equivalent to T, total number of setts
 var margin; //space between setts
