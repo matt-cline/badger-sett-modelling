@@ -137,6 +137,15 @@ void mousePressed() {
 		frameCount = 0;
 		setts1 = randomSetts(setts1);
 	}
+	if (isInside(mouseX,mouseY,width+14, height/2 + 123, 84, 34)) {
+		//blank click
+		run = 0;
+		N = 0;
+		frameCount = 0;
+		for (var i = 0; i < nsq; i++) {
+			setts1[i].state = 'u';
+		}
+	}
 	if (isInside(mouseX,mouseY,width+12, height/2 - 140, 20, 20)) {
 		//-- click
 		n -= 5;
@@ -173,7 +182,7 @@ void draw() {
 	
 	rect(width+11, height/2 - 110, 90, 140); //info box
 
-	rect(width+11, height/2 + 40, 90, 80); //lower button box
+	rect(width+11, height/2 + 40, 90, 120); //lower button box
 	
 	rect(width+11, height/2 - 160, 90, 40); //upper control box
 	
@@ -206,16 +215,19 @@ void draw() {
 	//lower button box inner	
 	fill(grey);
 	rect(width+14, height/2 + 83, 84, 34); //reset button
+	rect(width+14, height/2 + 123, 84, 34); //blank button
 	if(run === 1){
 		fill(black);
 	} else {
 		fill(grey);
 	}
 	rect(width+14, height/2 + 43, 84, 34); //stop/go button
+	
 	fill(white);
 	textSize(17);
 	text("STOP/GO", width + 18, height/2 + 67);
 	text("RESET", width + 29, height/2 + 107);
+	text("BLANK", width + 29, height/2 + 147);
 	
 	//reset neighbours
 	for (var i = 0; i < nsq; i++) {
