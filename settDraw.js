@@ -6,7 +6,7 @@ var nsq; 	//used often, equivalent to T, total number of setts
 var margin; //space between setts
 var boxSize;
 var N;		//years
-var mu = 0.5;
+var mu = 0.05;
 setts1 = new Array();
 //note: all of the above are given values in 'initialise()'
 
