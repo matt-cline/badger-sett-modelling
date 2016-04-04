@@ -6,6 +6,7 @@ var nsq; 	//used often, equivalent to T, total number of setts
 var margin; //space between setts
 var boxSize;
 var N;		//years
+var mu = 0.5;
 setts1 = new Array();
 //note: all of the above are given values in 'initialise()'
 
@@ -138,28 +139,38 @@ void mousePressed() {
 		setts1 = randomSetts(setts1);
 	}
 	if (isInside(mouseX,mouseY,width+12, height/2 - 140, 20, 20)) {
-		//-- click
+		//n-- click
 		n -= 5;
 		if (n<2) {n=2;}
 		initialise();
 	}
 	if (isInside(mouseX,mouseY,width+34, height/2 - 140, 20, 20)) {
-		//- click
+		//n- click
 		n--;
 		if (n<2) {n=2;}
 		initialise();
 	}
 	if (isInside(mouseX,mouseY,width+56, height/2 - 140, 20, 20)) {
-		//+ click
+		//n+ click
 		n++;
 		if (n>40) {n=40;}
 		initialise();
 	}
 	if (isInside(mouseX,mouseY,width+78, height/2 - 140, 20, 20)) {
-		//++ click
+		//n++ click
 		n += 5;
 		if (n>40) {n=40;}
 		initialise();
+	}
+	if (isInside(mouseX,mouseY,width+74,height/2-190,20,16)) {
+		//mu+ click
+		mu += 0.1;
+		if (mu>1) {mu=1;}
+	}
+	if (isInside(mouseX,mouseY,width+18,height/2-190,20,16)) {
+		//mu- click
+		mu -= 0.1;
+		if (mu<0) {mu=0;}
 	}
 };
 
@@ -175,7 +186,9 @@ void draw() {
 
 	rect(width+11, height/2 + 40, 90, 80); //lower button box
 	
-	rect(width+11, height/2 - 160, 90, 40); //upper control box
+	rect(width+11, height/2 - 160, 90, 40); //upper n box
+	
+	rect(width+11, height/2 - 210, 90, 40); //upper mu box
 	
 	//upper control buttons
 	/*
@@ -183,6 +196,12 @@ void draw() {
 	rect(width+34, height/2 - 140, 20, 20);
 	rect(width+56, height/2 - 140, 20, 20);
 	rect(width+78, height/2 - 140, 20, 20);
+	*/
+	
+	//boxes for mu buttons
+	/*
+	rect(width+18,height/2-190,20,16);
+	rect(width+74,height/2-190,20,16);
 	*/
 	
 	//info box inner
@@ -196,13 +215,21 @@ void draw() {
 	text("S = " + S, width+13, height/2 - 20);
 	
 	text("n is " + n, width + 13, height/2 - 145);
+	text("Culling Level", width + 13, height/2 - 195);
+	text(round(mu*100) + "%", width + 43, height/2 - 177);
+	
 	textSize(25);
 	text("--", width+14, height/2 - 123);
 	text("-", width+40, height/2 - 123);
+	text("-", width+24, height/2 - 175);	//mu
 	textSize(20);
 	text("+", width+61, height/2 - 123);
 	text("+", width+78, height/2 - 123);
 	text("+", width+88, height/2 - 123);
+	text("+", width+78, height/2 - 175);	//mu
+	
+	
+	
 	//lower button box inner	
 	fill(grey);
 	rect(width+14, height/2 + 83, 84, 34); //reset button
@@ -247,6 +274,10 @@ void draw() {
 				var prob = lambda * p * nu * 0.25 * sigma * (1 - kappa) * setts1[i].neigh + kappa;
 				if(num < prob) {
 					setts1[i].state = 's';
+				}
+			} else if (setts1[i].state === 's') {
+				if(num < mu) {
+					setts1[i].state = 'u';
 				}
 			}
 		}
