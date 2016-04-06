@@ -282,6 +282,14 @@ void draw() {
 	text("P = " + P, width+13, height/2 - 35);
 	text("S = " + S, width+13, height/2 - 20);
 	
+	stroke(255,0,0);
+	line(width+30,height/2-50,width+35,height/2-50);
+	stroke(0,255,0);
+	line(width+30,height/2-35,width+35,height/2-35);
+	stroke(0,0,255);
+	line(width+30,height/2-20,width+35,height/2-20);
+	stroke(black);
+	
 	if(N<maxYear+1) {
 		settValues[N]=[U,P,S];
 	}
