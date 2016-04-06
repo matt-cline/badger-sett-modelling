@@ -16,6 +16,10 @@ var kappa = 0.1452, sigma = 0.1581;	//fixed values
 var num = 0;		//random number check
 var U = 0, P = 0, S = 0;//initial sett counters
 
+var maxYear = 200;
+settValues = new Array(maxYear+1);
+
+
 color white = color(255, 255, 255);
 color grey  = color(200, 200, 200);
 color black = color(  0,   0,   0);
@@ -28,6 +32,10 @@ var initialise = function() {
 		setts1[i] = new Sett(i);
 	}
 	setts1 = randomSetts(setts1);
+	for (var i=0; i<maxYear+1; i++) {
+		settValues[i]=[0,0,0];
+	}
+	settValues[0]=[U,P,S];
 };
 
 //when given the ID number, determines the row value
@@ -109,8 +117,9 @@ Sett.prototype.checkBox = function(x, y) {
 //generates n*n setts with location, random state and 0 neighbours.
 initialise();
 
+
 void setup() {
-	size(width+102,height+2);
+	size(width+width+113,height+2);
 };
 
 void mousePressed() {
@@ -183,14 +192,63 @@ void mousePressed() {
 	}
 };
 
+
+
 void draw() {
 	
 	background(white);
 	rectMode(CORNER);
 	fill(white);
+	stroke(black);
 	rect(1,1,width,height); //outer canvas
+	rect(width+112,1,width,height); //right canvas
 	
+	//Graph drawing code
+	strokeWeight(3);
+	fill(black);	
+	textAlign(CENTER);
+	//graphing parameters
+	var mG = 44;
+	var axisPoints = round(width/80);
+	var interval = (width-(2*mG))/axisPoints;
+	var nInterval = nsq/axisPoints;
+	var xInterval = round(maxYear/axisPoints);
 	
+	line(width+110+mG,mG,width+110+mG,height-mG); //y axis
+	line(width+110+mG,height-mG,2*width+110-mG,height-mG); //x axis
+	strokeWeight(2);
+	//Axes Labels
+	for (var i=0; i<axisPoints; i++) {
+		line(width+109+mG,mG+(i*interval),width+102+mG,mG+(i*interval));
+		text(round(nsq -(i*nInterval)),width+95+mG,mG+2+(i*interval));
+		line(width+110+mG+(i*interval),height-mG,width+110+mG+(i*interval),height-mG+7);
+		text(0+(i+1)*xInterval,width+115+mG+((i+1)*interval),height-mG+20);
+	}
+	line(width+110+mG,height-mG,width+102+mG,height-mG);
+	text(0,width+100+mG,mG+2+(i*interval));
+	line(2*width+110-mG,height-mG,2*width+110-mG,height-mG+7);
+	text(0,width+115+mG,mG+20+(i*interval));
+	
+	textSize(16);
+	text("Time - Years",width*1.5+110,height-10);
+	
+	pushMatrix();
+	translate(width+127,height/2-30);
+	rotate(3*(3.14159265/2));
+	fill(255,255,255,200);
+	rectMode(CENTER);
+	noStroke();
+	rect(0,-4,90,20);
+	fill(black);
+	text("No. of Setts",0,0);
+	popMatrix();
+	
+	//correcting changes
+	rectMode(CORNER);
+	stroke(black);
+	strokeWeight(1);	
+	
+	fill(white);
 	rect(width+11, height/2 - 110, 90, 140); //info box
 
 	rect(width+11, height/2 + 40, 90, 120); //lower button box
@@ -216,12 +274,17 @@ void draw() {
 	//info box inner
 	fill(black);
 	textSize(14);
+	textAlign(LEFT);
 	text(frameCount, width+13, height/2 - 95);
 	text(N + " years", width+13, height/2 - 80);
 	text("T = " + nsq, width+13, height/2 - 65);
 	text("U = " + U, width+13, height/2 - 50);
 	text("P = " + P, width+13, height/2 - 35);
 	text("S = " + S, width+13, height/2 - 20);
+	
+	if(N<maxYear+1) {
+		settValues[N]=[U,P,S];
+	}
 	
 	text("n is " + n, width + 13, height/2 - 145);
 	text("Culling Level", width + 13, height/2 - 195);
@@ -293,13 +356,47 @@ void draw() {
 				}
 			}
 		}
+		
 	}
 	//draw final
 	for (var i = 0; i < nsq; i++) {
         setts1[i].drawSett();
     }
+	
+	//graph drawing plots
+	for(var j=0;j<3;j++) {
+		noFill();
+		if(j==0){stroke(255,0,0);}
+		else if(j==1){stroke(0,255,0);}
+		else {stroke(0,0,255);}
+		if(N<maxYear+1){
+			for(var i=0;i<=N;i+=1){
+				
+				var tempX = width+110+mG+i*((width-(2*mG))/maxYear);
+				var tempY = width-mG-settValues[i][j]*(((width-(2*mG))/nsq));
+				ellipse(tempX,tempY,3,3);
+				if (i>0) {
+					line(tempX,tempY,oldX,oldY);
+				}
+				var oldX = tempX, oldY = tempY;
+			}
+		} else {
+			for(var i= 0;i<maxYear+1;i+=1) {
+				var tempX = width+110+mG+i*((width-(2*mG))/maxYear);
+				var tempY = width-mG-settValues[i][j]*(((width-(2*mG))/nsq));
+				ellipse(tempX,tempY,3,3);
+				if (i>0) {
+					line(tempX,tempY,oldX,oldY);
+				}
+				var oldX = tempX, oldY = tempY;
+			}
+		}
+	}
+	/*
 	fill(255, 0, 0);
 	textSize(30);
 	text("+",mouseX-8,mouseY+10);
+	*/
+	//The above was a plus sign used in testing where the mouse was.
 };
 
