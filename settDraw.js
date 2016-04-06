@@ -282,12 +282,13 @@ void draw() {
 	text("P = " + P, width+13, height/2 - 35);
 	text("S = " + S, width+13, height/2 - 20);
 	
+	strokeWeight(3);
 	stroke(255,0,0);
-	line(width+30,height/2-50,width+35,height/2-50);
+	line(width+60,height/2-55,width+85,height/2-55);
 	stroke(0,255,0);
-	line(width+30,height/2-35,width+35,height/2-35);
+	line(width+60,height/2-40,width+85,height/2-40);
 	stroke(0,0,255);
-	line(width+30,height/2-20,width+35,height/2-20);
+	line(width+60,height/2-25,width+85,height/2-25);
 	stroke(black);
 	
 	if(N<maxYear+1) {
