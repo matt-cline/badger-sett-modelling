@@ -7,8 +7,7 @@ particularly illuminating, it simply draws the canvas and loads the settDraw.js 
 processing library is freeely available at processingjs.org
 
 # settDraw
-  The interface for settDraw is an 800 x 800 pixel canvas with an 800 x 100 column panel to the right. These sizes are flexible but all
-of my testing took place at this resolution.
+  The interface for settDraw is an 800 x 800 pixel canvas with an 800 x 100 column panel in the centre and an 800 x 800 graphing canvas to the right. These sizes are flexible but all of my testing took place at this resolution.
 
 # Testing Page
 https://rawgit.com/matt-cline/badger-sett-modelling/master/index.html
