@@ -290,6 +290,7 @@ void draw() {
 	stroke(0,0,255);
 	line(width+60,height/2-25,width+85,height/2-25);
 	stroke(black);
+	strokeWeight(1);
 	
 	if(N<maxYear+1) {
 		settValues[N]=[U,P,S];
