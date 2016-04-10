@@ -67,7 +67,7 @@ var updateNeighs = function(setts, i) {
 var randomSetts = function(setts) {
 	for (var i = 0; i < nsq; i++) {
 		num = random(0,1);
-		var ratio = URat + PRat + Srat;
+		var ratio = URat + PRat + SRat;
 		if(num < URat/ratio) {
 			setts[i].state = 'u';
 		} else if (num < (URat+Prat)/ratio) {
