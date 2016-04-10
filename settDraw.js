@@ -15,6 +15,8 @@ var p = 0.25, lambda = 0.25, nu = 0.5;	//default values
 var kappa = 0.1452, sigma = 0.1581;	//fixed values
 var num = 0;		//random number check
 var U = 0, P = 0, S = 0;//initial sett counters
+var URat = 1, PRat = 1, SRat = 1;
+
 
 var maxYear = 200;
 settValues = new Array(maxYear+1);
@@ -65,12 +67,13 @@ var updateNeighs = function(setts, i) {
 var randomSetts = function(setts) {
 	for (var i = 0; i < nsq; i++) {
 		num = random(0,1);
-		if(num < 0.25) {
-			setts[i].state = 'p';
-		} else if (num < 0.5) {
-			setts[i].state = 's';
-		} else {
+		var ratio = URat + PRat + Srat;
+		if(num < URat/ratio) {
 			setts[i].state = 'u';
+		} else if (num < (URat+Prat)/ratio) {
+			setts[i].state = 'p';
+		} else {
+			setts[i].state = 's';
 		}
 	}
 	return setts;
