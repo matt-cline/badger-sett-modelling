@@ -70,7 +70,7 @@ var randomSetts = function(setts) {
 		var ratio = URat + PRat + SRat;
 		if(num < URat/ratio) {
 			setts[i].state = 'u';
-		} else if (num < (URat+Prat)/ratio) {
+		} else if (num < (URat+PRat)/ratio) {
 			setts[i].state = 'p';
 		} else {
 			setts[i].state = 's';
