@@ -1,4 +1,4 @@
-var width = 800;
+var width = 600;
 var height = width;
 
 var n = 10; //default value for number of rows/columns to be input
