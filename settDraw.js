@@ -185,12 +185,12 @@ void mousePressed() {
 	}
 	if (isInside(mouseX,mouseY,width+74,height/2-190,20,16)) {
 		//mu+ click
-		mu += 0.1;
+		mu += 0.05;
 		if (mu>1) {mu=1;}
 	}
 	if (isInside(mouseX,mouseY,width+18,height/2-190,20,16)) {
 		//mu- click
-		mu -= 0.1;
+		mu -= 0.05;
 		if (mu<0) {mu=0;}
 	}
 };
