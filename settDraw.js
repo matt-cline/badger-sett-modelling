@@ -126,31 +126,18 @@ void setup() {
 };
 
 void mousePressed() {
-	for (var i = 0; i < nsq; i++) {
-		if (setts1[i].checkBox(mouseX,mouseY)) {
-			if (setts1[i].state === 'u') {
-				setts1[i].state = 'p';
-			} else if (setts1[i].state === 'p') {
-				setts1[i].state = 's';
-			} else {
-				setts1[i].state = 'u';
-			}
-		}
-	};
-	if (isInside(mouseX,mouseY,width+14, height/2 + 43, 84, 34)) {
+	if (isInside(mouseX,mouseY,width+14,height/2+43,84,34)) {
 		//stop/go click
 		run++;
 		run %= 2;
 		//run takes value 1 or 0
-	} 
-	if (isInside(mouseX,mouseY,width+14, height/2 + 83, 84, 34)) {
+	} else if (isInside(mouseX,mouseY,width+14,height/2+83,84,34)) {
 		//reset click
 		run = 0;
 		N = 0;
 		frameCount = 0;
 		setts1 = randomSetts(setts1);
-	}
-	if (isInside(mouseX,mouseY,width+14, height/2 + 123, 84, 34)) {
+	} else if (isInside(mouseX,mouseY,width+14,height/2+123,84,34)) {
 		//blank click
 		run = 0;
 		N = 0;
@@ -158,40 +145,46 @@ void mousePressed() {
 		for (var i = 0; i < nsq; i++) {
 			setts1[i].state = 'u';
 		}
-	}
-	if (isInside(mouseX,mouseY,width+12, height/2 - 140, 20, 20)) {
+	} else if (isInside(mouseX,mouseY,width+12,height/2-140,20,20)) {
 		//n-- click
 		n -= 5;
 		if (n<2) {n=2;}
 		initialise();
-	}
-	if (isInside(mouseX,mouseY,width+34, height/2 - 140, 20, 20)) {
+	} else if (isInside(mouseX,mouseY,width+34,height/2-140,20,20)) {
 		//n- click
 		n--;
 		if (n<2) {n=2;}
 		initialise();
-	}
-	if (isInside(mouseX,mouseY,width+56, height/2 - 140, 20, 20)) {
+	} else if (isInside(mouseX,mouseY,width+56,height/2-140,20,20)) {
 		//n+ click
 		n++;
 		if (n>40) {n=40;}
 		initialise();
-	}
-	if (isInside(mouseX,mouseY,width+78, height/2 - 140, 20, 20)) {
+	} else if (isInside(mouseX,mouseY,width+78,height/2-140,20,20)) {
 		//n++ click
 		n += 5;
 		if (n>40) {n=40;}
 		initialise();
-	}
-	if (isInside(mouseX,mouseY,width+74,height/2-190,20,16)) {
+	} else if (isInside(mouseX,mouseY,width+74,height/2-190,20,16)) {
 		//mu+ click
 		mu += 0.05;
 		if (mu>1) {mu=1;}
-	}
-	if (isInside(mouseX,mouseY,width+18,height/2-190,20,16)) {
+	} else if (isInside(mouseX,mouseY,width+18,height/2-190,20,16)) {
 		//mu- click
 		mu -= 0.05;
 		if (mu<0) {mu=0;}
+	} else {
+		for (var i = 0; i < nsq; i++) {
+			if (setts1[i].checkBox(mouseX,mouseY)) {
+				if (setts1[i].state === 'u') {
+					setts1[i].state = 'p';
+				} else if (setts1[i].state === 'p') {
+					setts1[i].state = 's';
+				} else {
+					setts1[i].state = 'u';
+				}
+			}
+		};
 	}
 };
 
@@ -384,7 +377,6 @@ void draw() {
 		else {stroke(0,0,255);}
 		if(N<maxYear+1){
 			for(var i=0;i<=N;i+=1){
-				
 				var tempX = width+110+mG+i*((width-(2*mG))/maxYear);
 				var tempY = width-mG-settValues[i][j]*(((width-(2*mG))/nsq));
 				ellipse(tempX,tempY,3,3);
