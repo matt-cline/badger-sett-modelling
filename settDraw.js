@@ -10,6 +10,7 @@ var mu = 0.05;
 setts1 = new Array();
 //note: all of the above are given values in 'initialise()'
 
+var frameUpdate = 5;
 var run = 0;		//determines whether to update or not
 var p = 0.25, lambda = 1, nu = 0.5;	//default values
 var kappa = 0.1452, sigma = 0.1581;	//fixed values
@@ -386,7 +387,7 @@ void draw() {
 		}
     	}
 	//if we are running the simulation, this is where the maths is
-	if (run === 1 && (frameCount % 10) === 0) {
+	if (run === 1 && (frameCount % frameUpdate) === 0) {
 		N++;
 		for (var i = 0; i < nsq; i++) {
 			var num = random(0,1);
