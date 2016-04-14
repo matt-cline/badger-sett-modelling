@@ -18,7 +18,7 @@ var U = 0, P = 0, S = 0;//initial sett counters
 var URat = 1, PRat = 1, SRat = 1;
 
 
-var maxYear = 200;
+var maxYear = 1000;
 settValues = new Array(maxYear+1);
 
 
