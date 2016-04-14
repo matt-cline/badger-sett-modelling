@@ -11,7 +11,7 @@ setts1 = new Array();
 //note: all of the above are given values in 'initialise()'
 
 var run = 0;		//determines whether to update or not
-var p = 0.25, lambda = 0.25, nu = 0.5;	//default values
+var p = 0.25, lambda = 1, nu = 0.5;	//default values
 var kappa = 0.1452, sigma = 0.1581;	//fixed values
 var num = 0;		//random number check
 var U = 0, P = 0, S = 0;//initial sett counters
@@ -77,6 +77,13 @@ var randomSetts = function(setts) {
 		}
 	}
 	return setts;
+};
+
+var drawArrow = function(arrowLoc,arrowHeight,inverted) {
+	line(arrowLoc,arrowHeight,arrowLoc+7,arrowHeight-8*inverted);
+	line(arrowLoc+1,arrowHeight,arrowLoc+8,arrowHeight-8*inverted);
+	line(arrowLoc+14,arrowHeight,arrowLoc+7,arrowHeight-8*inverted);
+	line(arrowLoc+15,arrowHeight,arrowLoc+8,arrowHeight-8*inverted);
 };
 
 /* A sett has an ID number from 1 to n^2, corresponding to the 
@@ -173,6 +180,22 @@ void mousePressed() {
 		//mu- click
 		mu -= 0.05;
 		if (mu<0) {mu=0;}
+	} else if (isInside(mouseX,mouseY,width+24,height/2-256,22,12)) {
+		//p upper
+		p += 0.05;
+		if (p>1) {p=1;}
+	} else if (isInside(mouseX,mouseY,width+24,height/2-234,22,12)) {
+		//p lower
+		p -= 0.05;
+		if (p<0) {p=0;}
+	} else if (isInside(mouseX,mouseY,width+68,height/2-256,22,12)) {
+		//nu upper
+		nu += 0.05;
+		if (nu>1) {nu=1;}
+	} else if (isInside(mouseX,mouseY,width+68,height/2-234,22,12)) {
+		//nu lower
+		nu -= 0.05;
+		if (nu<0) {nu=0;}
 	} else {
 		for (var i = 0; i < nsq; i++) {
 			if (setts1[i].checkBox(mouseX,mouseY)) {
@@ -205,6 +228,7 @@ void draw() {
 	textAlign(CENTER);
 	//graphing parameters
 	var mG = 44;
+	var ymG = 44;
 	var axisPoints = round(width/80);
 	var interval = (width-(2*mG))/axisPoints;
 	var nInterval = nsq/axisPoints;
@@ -253,6 +277,8 @@ void draw() {
 	
 	rect(width+11, height/2 - 210, 90, 40); //upper mu box
 	
+	rect(width+11, height/2 - 260, 90, 40); //upper p & nu box
+	
 	//upper control buttons
 	/*
 	rect(width+12, height/2 - 140, 20, 20);
@@ -279,22 +305,40 @@ void draw() {
 	text("S = " + S, width+13, height/2 - 20);
 	
 	strokeWeight(3);
+	//key for graph
 	stroke(255,0,0);
-	line(width+60,height/2-55,width+85,height/2-55);
+	line(width+70,height/2-55,width+95,height/2-55);
 	stroke(0,255,0);
-	line(width+60,height/2-40,width+85,height/2-40);
+	line(width+70,height/2-40,width+95,height/2-40);
 	stroke(0,0,255);
-	line(width+60,height/2-25,width+85,height/2-25);
+	line(width+70,height/2-25,width+95,height/2-25);
 	stroke(black);
 	strokeWeight(1);
+	//arrows for paramter control
+	drawArrow(width+28,height/2-246,1);
+	drawArrow(width+72,height/2-246,1);
+	drawArrow(width+28,height/2-231,-1);
+	drawArrow(width+72,height/2-231,-1);
+
+	//these are capture boxes for the arrows above	
+	/*
+	rect(width+24,height/2-256,22,12);
+	rect(width+68,height/2-256,22,12);
+	rect(width+24,height/2-234,22,12);
+	rect(width+68,height/2-234,22,12);
+	*/
 	
 	if(N<maxYear+1) {
 		settValues[N]=[U,P,S];
 	}
 	
 	text("n is " + n, width + 13, height/2 - 145);
-	text("Culling Level", width + 13, height/2 - 195);
 	text(round(mu*100) + "%", width + 43, height/2 - 177);
+	textSize(13);
+	text("Culling Level, \u03BC", width + 13, height/2 - 195);
+	textSize(12);
+	text("p=" + round(p*100)/100, width+15, height/2-234);
+	text("\u03BD=" + round(nu*100)/100, width+62, height/2-234);
 	
 	textSize(25);
 	text("--", width+14, height/2 - 123);
@@ -378,7 +422,7 @@ void draw() {
 		if(N<maxYear+1){
 			for(var i=0;i<=N;i+=1){
 				var tempX = width+110+mG+i*((width-(2*mG))/maxYear);
-				var tempY = width-mG-settValues[i][j]*(((width-(2*mG))/nsq));
+				var tempY = width-ymG-settValues[i][j]*(((width-(2*ymG))/nsq));
 				ellipse(tempX,tempY,3,3);
 				if (i>0) {
 					line(tempX,tempY,oldX,oldY);
@@ -388,7 +432,7 @@ void draw() {
 		} else {
 			for(var i= 0;i<maxYear+1;i+=1) {
 				var tempX = width+110+mG+i*((width-(2*mG))/maxYear);
-				var tempY = width-mG-settValues[i][j]*(((width-(2*mG))/nsq));
+				var tempY = width-ymG-settValues[i][j]*(((width-(2*ymG))/nsq));
 				ellipse(tempX,tempY,3,3);
 				if (i>0) {
 					line(tempX,tempY,oldX,oldY);
