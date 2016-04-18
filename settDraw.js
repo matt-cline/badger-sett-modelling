@@ -1,4 +1,4 @@
-var width = 600;
+var width = 800;
 var height = width;
 
 var n = 10; //default value for number of rows/columns to be input
@@ -21,6 +21,8 @@ var B = 0;	//will be used for total number of badgers
 var URat = 1, PRat = 1, SRat = 1;
 
 var maxYear = 200;
+var cullUntil = 50;
+var cullMode = 0;
 settValues = new Array(maxYear+1);
 
 
@@ -131,19 +133,17 @@ Sett.prototype.checkBox = function(x, y) {
 		   y >= ybox && y <= ybox + boxSize;
 };
 
-//generates n*n setts with location, random state and 0 neighbours.
+//generates n*n setts with location, random(ish) state and 0 neighbours.
 initialise();
 
 
-void setup() {
-	size(width+width+113,height+2);
-};
+
 
 void mousePressed() {
 	if (isInside(mouseX,mouseY,width+14,height/2+43,84,34)) {
 		//stop/go click
 		run++;
-		run %= 2;
+		run%=2;
 		//run takes value 1 or 0
 	} else if (isInside(mouseX,mouseY,width+14,height/2+83,84,34)) {
 		//reset click
@@ -151,14 +151,10 @@ void mousePressed() {
 		N = 0;
 		frameCount = 0;
 		setts1 = randomSetts(setts1);
-	} else if (isInside(mouseX,mouseY,width+14,height/2+123,84,34)) {
-		//blank click
-		run = 0;
-		N = 0;
-		frameCount = 0;
-		for (var i = 0; i < nsq; i++) {
-			setts1[i].state = 'u';
-		}
+	} else if (isInside(mouseX,mouseY,width+14, height/2 + 263, 84, 34)) {
+		//change cull mode
+		cullMode++;
+		cullMode%=2;
 	} else if (isInside(mouseX,mouseY,width+12,height/2-140,20,20)) {
 		//n-- click
 		n -= 5;
@@ -203,6 +199,78 @@ void mousePressed() {
 		//nu lower
 		nu -= 0.05;
 		if (nu<0) {nu=0;}
+	} else if (isInside(mouseX,mouseY,width+13, height/2-290,26,20)) {
+		//low resolution
+		width = 600;
+		height = width;
+		initialise();
+	} else if (isInside(mouseX,mouseY,width+43, height/2-290,26,20)) {
+		//medium resolution
+		width = 700;
+		height = width;
+		initialise();
+	} else if (isInside(mouseX,mouseY,width+73, height/2-290,26,20)) {
+		//high resolution
+		width = 800;
+		height = width;
+		initialise();
+	} else if (isInside(mouseX,mouseY,width+14,height/2+123,26,15)) {
+		//U ratio +1
+		URat++;
+	} else if (isInside(mouseX,mouseY,width+43,height/2+123,26,15)) {
+		//P ratio +1
+		PRat++;
+	} else if (isInside(mouseX,mouseY,width+72,height/2+123,26,15)) {
+		//S ratio +1
+		SRat++;
+	} else if (isInside(mouseX,mouseY,width+14,height/2+142,26,15)) {
+		//U ratio -1
+		URat--;
+		if(URat<0){URat=0;}
+	} else if (isInside(mouseX,mouseY,width+43,height/2+142,26,15)) {
+		//U ratio -1
+		PRat--;
+		if(PRat<0){PRat=0;}
+	} else if (isInside(mouseX,mouseY,width+72,height/2+142,26,15)) {
+		//U ratio -1
+		SRat--;
+		if(SRat<0){SRat=0;}
+			rect(width+60,height/2+240,30,10);
+	rect(width+60,height/2+220,30,10);
+	rect(width+60,height/2+200,30,10);
+	rect(width+60,height/2+180,30,10);
+	} else if (isInside(mouseX,mouseY,width+60,height/2+180,30,10)) {
+		//maxYear +
+		maxYear += 100;
+		if(maxYear===150){maxYear=100};
+	} else if (isInside(mouseX,mouseY,width+60,height/2+200,30,10)) {
+		//maxYear +
+		maxYear -= 100;
+		if(maxYear<100){maxYear=50;}
+	} else if (isInside(mouseX,mouseY,width+60,height/2+220,30,10)) {
+		//cull year +
+		if(cullUntil<10){
+			cullUntil+=1;
+		} else if (cullUntil <20){
+			cullUntil+=2;
+		} else if (cullUntil <50){
+			cullUntil+=5;
+		} else {
+			cullUntil+=10;
+		}
+	} else if (isInside(mouseX,mouseY,width+60,height/2+240,30,10)) {
+		//cull year -
+		if(cullUntil<=0) {
+			cullUntil = 0;
+		} else if(cullUntil<=10){
+			cullUntil-=1;
+		} else if (cullUntil <=20){
+			cullUntil-=2;
+		} else if (cullUntil <=50){
+			cullUntil-=5;
+		} else {
+			cullUntil-=10;
+		}
 	} else {
 		for (var i = 0; i < nsq; i++) {
 			if (setts1[i].checkBox(mouseX,mouseY)) {
@@ -218,7 +286,9 @@ void mousePressed() {
 	}
 };
 
-
+void setup() {
+	size(width+width+113,height+2);
+};
 
 void draw() {
 	
@@ -228,21 +298,22 @@ void draw() {
 	stroke(black);
 	rect(1,1,width,height); //outer canvas
 	rect(width+112,1,width,height); //right canvas
+		
+	//graphing parameters
+	var mG = 44;
+	var ymG = 54;
+	var axisPoints = round(width/80);
+	var yInterval = (width-(2*mG))/axisPoints;
+	var xInterval = (width-(2*ymG))/axisPoints;
+	var nInterval = nsq/axisPoints;
+	var tInterval = round(maxYear/axisPoints);
+	var maxBadg = nsq*8.8;
+	var bInterval = maxBadg/axisPoints;
 	
 	//Graph drawing code
 	strokeWeight(3);
 	fill(black);	
 	textAlign(CENTER);
-	//graphing parameters
-	var mG = 44;
-	var ymG = 54;
-	var axisPoints = round(width/80);
-	var interval = (width-(2*mG))/axisPoints;
-	var nInterval = nsq/axisPoints;
-	var xInterval = round(maxYear/axisPoints);
-	var maxBadg = nsq*8.8;
-	var bInterval = maxBadg/axisPoints;
-	
 	line(width+110+ymG,mG,width+110+ymG,height-mG); //y axis
 	line(width+110+ymG,height-mG,2*width+110-ymG,height-mG); //x axis
 	strokeWeight(2);
@@ -252,21 +323,21 @@ void draw() {
 	//Axes Labels
 	for (var i=0; i<axisPoints; i++) {
 		//y-axis
-		line(width+109+ymG,mG+(i*interval),width+102+ymG,mG+(i*interval));
-		text(round(nsq -(i*nInterval)),width+95+ymG,mG+2+(i*interval));
+		line(width+109+ymG,mG+(i*yInterval),width+102+ymG,mG+(i*yInterval));
+		text(round(nsq -(i*nInterval)),width+95+ymG,mG+2+(i*yInterval));
 		//x-axis
-		line(width+110+ymG+(i*interval),height-mG,width+110+ymG+(i*interval),height-mG+7);
-		text(0+(i+1)*xInterval,width+115+ymG+((i+1)*interval),height-mG+20);
+		line(width+110+ymG+(i*xInterval),height-mG,width+110+ymG+(i*xInterval),height-mG+7);
+		text(0+(i+1)*tInterval,width+115+ymG+((i+1)*xInterval),height-mG+20);
 		//y2-axis
-		line(2*width+110-ymG,mG+(i*interval),2*width+117-ymG,mG+(i*interval))
-		text(round(maxBadg-(i*bInterval)),2*width+140-ymG,mG+(i*interval));
+		line(2*width+110-ymG,mG+(i*yInterval),2*width+117-ymG,mG+(i*yInterval));
+		text(round(maxBadg-(i*bInterval)),2*width+140-ymG,mG+(i*yInterval));
 	}
 	line(width+110+ymG,height-mG,width+102+ymG,height-mG);
-	text(0,width+100+ymG,mG+2+(i*interval));
+	text(0,width+100+ymG,mG+2+(i*yInterval)); //y0
 	line(2*width+110-ymG,height-mG,2*width+110-ymG,height-mG+7);
-	text(0,width+115+ymG,mG+20+(i*interval));
-	line(2*width+110-ymG,mG+(i*interval),2*width+117-ymG,mG+(i*interval))
-	text(0,2*width+140-ymG,height-mG);
+	text(0,width+115+ymG,mG+20+(i*yInterval)); //x0
+	line(2*width+110-ymG,mG+(i*yInterval),2*width+117-ymG,mG+(i*yInterval))
+	text(0,2*width+140-ymG,height-mG); //y0 right
 	
 	textSize(16);
 	text("Time - Years",width*1.5+110,height-10);
@@ -285,23 +356,31 @@ void draw() {
 	text("Estimated Badger Population",0,-width+30);
 	popMatrix();
 	
-	//correcting changes
 	rectMode(CORNER);
 	stroke(black);
 	strokeWeight(1);	
 
 	line(width+110+ymG,height-mG-((height-2*mG)*0.3),2*width+110-ymG,height-mG-((height-2*mG)*0.3));//30% level
+	if (cullMode === 1) {
+		stroke(255,0,255);
+		line(width+110+ymG+(cullUntil/maxYear)*(width-(2*ymG)),mG,width+110+ymG+(cullUntil/maxYear)*(width-(2*ymG)),height-mG); //cullUntil point
+	}
 	stroke(white);
-	for(var i=0; i<30;i++){
+	for(var i=0; i<40;i++){
 		line(width+112+ymG+i*20,height-mG-((height-2*mG)*0.3),width+115+ymG+i*20,height-mG-((height-2*mG)*0.3));
 	}
 
+	//code for control boxes & buttons
 	
 	fill(white);
 	stroke(black);
 	rect(width+11, height/2 - 110, 90, 140); //info box
 
-	rect(width+11, height/2 + 40, 90, 120); //lower button box
+	rect(width+11, height/2 + 40, 90, 130); //lower button box
+	
+	rect(width+11, height/2 + 180, 90, 70); //lower Time Control Box
+	
+	rect(width+11, height/2 + 260, 90, 40); //lower cull Mode Box
 	
 	rect(width+11, height/2 - 160, 90, 40); //upper n box
 	
@@ -309,7 +388,16 @@ void draw() {
 	
 	rect(width+11, height/2 - 260, 90, 40); //upper p & nu box
 	
-	//upper control buttons
+	//rect(width+11, height/2 - 299, 90, 30); //resolution Control box
+	
+	//resolution control buttons
+	/*
+	rect(width+13, height/2 - 290, 26, 20);
+	rect(width+43, height/2 - 290, 26, 20);
+	rect(width+73, height/2 - 290, 26, 20);
+	*/
+	
+	//n control buttons
 	/*
 	rect(width+12, height/2 - 140, 20, 20);
 	rect(width+34, height/2 - 140, 20, 20);
@@ -323,6 +411,14 @@ void draw() {
 	rect(width+74,height/2-190,20,16);
 	*/
 	
+	//boxes for time buttons
+	/*
+	rect(width+60,height/2+240,30,10);
+	rect(width+60,height/2+220,30,10);
+	rect(width+60,height/2+200,30,10);
+	rect(width+60,height/2+180,30,10);
+	*/
+	
 	//info box inner
 	fill(black);
 	textSize(14);
@@ -334,6 +430,12 @@ void draw() {
 	text("P = " + P, width+13, height/2 - 35);
 	text("S = " + S, width+13, height/2 - 20);
 	text("B = " + round(B), width+13, height/2 - 5);
+	
+	//resolution control text
+	text("L",width+19,height/2-273);
+	text("M",width+49,height/2-273);
+	text("H",width+79,height/2-273);
+	text("Resolution",width+12,height/2-288);
 	
 	strokeWeight(3);
 	//key for graph
@@ -368,10 +470,27 @@ void draw() {
 	text("n is " + n, width + 13, height/2 - 145);
 	text(round(mu*100) + "%", width + 43, height/2 - 177);
 	textSize(13);
-	text("Culling Level, \u03BC", width + 13, height/2 - 195);
+	text("Culling Level, \u03BC", width + 13, height/2 - 195); //character for mu
 	textSize(12);
 	text("p=" + round(p*100)/100, width+15, height/2-234);
 	text("\u03BD=" + round(nu*100)/100, width+62, height/2-234);
+	
+	text("Initial U:P:S", width+14, height/2+168);
+	text(URat, width+24, height/2+145);
+	text(PRat, width+51, height/2+145);
+	text(SRat, width+81, height/2+145);
+	
+	text("Max", width+17, height/2+193);
+	text("Year:", width+17, height/2+207);
+	text(maxYear, width+65, height/2+200);
+	text("Cull", width+17, height/2+233);
+	text("Point:", width+17, height/2+247);
+	if(cullMode == 1){
+		text(cullUntil, width+65, height/2+240);
+	} else {
+		text("n/a", width+65, height/2+240);
+	}
+
 	
 	textSize(25);
 	text("--", width+14, height/2 - 123);
@@ -388,7 +507,28 @@ void draw() {
 	//lower button box inner	
 	fill(grey);
 	rect(width+14, height/2 + 83, 84, 34); //reset button
-	rect(width+14, height/2 + 123, 84, 34); //blank button
+	/*
+	rect(width+14, height/2 + 123, 26, 15); //Initial Ratio Buttons
+	rect(width+43, height/2 + 123, 26, 15); //Initial Ratio Buttons
+	rect(width+72, height/2 + 123, 26, 15); //Initial Ratio Buttons
+	rect(width+14, height/2 + 142, 26, 15); //Initial Ratio Buttons
+	rect(width+43, height/2 + 142, 26, 15); //Initial Ratio Buttons
+	rect(width+72, height/2 + 142, 26, 15); //Initial Ratio Buttons
+	*/
+	//arrows for Ratio Buttons
+	drawArrow(width+20,height/2+133,1);
+	drawArrow(width+49,height/2+133,1);
+	drawArrow(width+78,height/2+133,1);
+	drawArrow(width+20,height/2+149,-1);
+	drawArrow(width+49,height/2+149,-1);
+	drawArrow(width+78,height/2+149,-1);
+	
+	//arrows for time buttons
+	drawArrow(width+68,height/2+190,1);
+	drawArrow(width+68,height/2+202,-1);
+	drawArrow(width+68,height/2+230,1);
+	drawArrow(width+68,height/2+242,-1);
+	
 	if(run === 1){
 		fill(black);
 	} else {
@@ -396,11 +536,18 @@ void draw() {
 	}
 	rect(width+14, height/2 + 43, 84, 34); //stop/go button
 	
+	if(cullMode === 1){
+		fill(black);
+	} else {
+		fill(grey);
+	}
+	rect(width+14, height/2 + 263, 84, 34); //cullMode button
+	
 	fill(white);
 	textSize(17);
 	text("STOP/GO", width + 18, height/2 + 67);
-	text("RESET", width + 29, height/2 + 107);
-	text("BLANK", width + 29, height/2 + 147);
+	text("RESET"  , width + 29, height/2 + 107);
+	text("MODE"   , width + 31, height/2 + 287);
 	
 	//reset neighbours
 	for (var i = 0; i < nsq; i++) {
@@ -435,7 +582,7 @@ void draw() {
 				if(num < prob) {
 					setts1[i].state = 's';
 				}
-			} else if (setts1[i].state === 's') {
+			} else if (setts1[i].state === 's' && (N <= cullUntil || cullMode === 0) ) {
 				if(num < mu) {
 					setts1[i].state = 'u';
 				}
@@ -459,10 +606,10 @@ void draw() {
 			for(var i=0;i<=N;i+=1){
 				var tempX = width+110+ymG+i*((width-(2*ymG))/maxYear);
 				if(j!==3){
-					var tempY = width-ymG-settValues[i][j]*(((width-(2*mG))/nsq));
+					var tempY = width-mG-settValues[i][j]*(((width-(2*mG))/nsq));
 					ellipse(tempX,tempY,3,3);
 				} else {
-					var tempY = width-ymG-settValues[i][j]*(((width-(2*mG))/maxBadg));
+					var tempY = width-mG-settValues[i][j]*(((width-(2*mG))/maxBadg));
 					ellipse(tempX,tempY,1.5,1.5);
 				}
 				if (i>0) {
@@ -474,10 +621,10 @@ void draw() {
 			for(var i= 0;i<maxYear+1;i+=1) {
 				var tempX = width+110+ymG+i*((width-(2*ymG))/maxYear);
 				if(j!==3){
-					var tempY = width-ymG-settValues[i][j]*(((width-(2*mG))/nsq));
+					var tempY = width-mG-settValues[i][j]*(((width-(2*mG))/nsq));
 					ellipse(tempX,tempY,3,3);
 				} else {
-					var tempY = width-ymG-settValues[i][j]*(((width-(2*mG))/maxBadg));
+					var tempY = width-mG-settValues[i][j]*(((width-(2*mG))/maxBadg));
 					ellipse(tempX,tempY,1.5,1.5);
 				}
 				if (i>0) {
