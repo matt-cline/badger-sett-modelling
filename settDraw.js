@@ -6,18 +6,19 @@ var nsq; 	//used often, equivalent to T, total number of setts
 var margin; //space between setts
 var boxSize;
 var N;		//years
-var mu = 0.05;
 setts1 = new Array();
 //note: all of the above are given values in 'initialise()'
 
 var frameUpdate = 5;
 var run = 0;		//determines whether to update or not
-var p = 0.25, lambda = 1, nu = 0.5;	//default values
+var mu = 0.05;	//culling rate default
+var p = 0.75, lambda = 1, nu = 0.5;	//default values
 var kappa = 0.1452, sigma = 0.1581;	//fixed values
 var num = 0;		//random number check
-var U = 0, P = 0, S = 0;//initial sett counters
-var URat = 1, PRat = 1, SRat = 1;
 
+var U = 0, P = 0, S = 0;//initial sett counters
+var B = 0;	//will be used for total number of badgers
+var URat = 1, PRat = 1, SRat = 1;
 
 var maxYear = 200;
 settValues = new Array(maxYear+1);
@@ -27,6 +28,7 @@ color white = color(255, 255, 255);
 color grey  = color(200, 200, 200);
 color black = color(  0,   0,   0);
 
+//resets all variables and sett conditions
 var initialise = function() {
 	run = 0, N = 0, frameCount = 0;
 	nsq = n * n, margin = 100/n;
@@ -36,9 +38,9 @@ var initialise = function() {
 	}
 	setts1 = randomSetts(setts1);
 	for (var i=0; i<maxYear+1; i++) {
-		settValues[i]=[0,0,0];
+		settValues[i]=[0,0,0,0];
 	}
-	settValues[0]=[U,P,S];
+	settValues[0]=[U,P,S,B];
 };
 
 //when given the ID number, determines the row value
@@ -54,6 +56,7 @@ var isInside = function(x, y, startX, startY, widthX, heightY) {
 		   y >= startY && y <= startY + heightY;
 }
 
+//function to calculate niehgbours at each iteration.
 var updateNeighs = function(setts, i) {
     var tempSetts = setts;
 	if (setts[i].state === 's') {
@@ -65,6 +68,7 @@ var updateNeighs = function(setts, i) {
 	return tempSetts;
 };
 
+//sets the state of each of the setts independently based on ratios defined above
 var randomSetts = function(setts) {
 	for (var i = 0; i < nsq; i++) {
 		num = random(0,1);
@@ -80,6 +84,7 @@ var randomSetts = function(setts) {
 	return setts;
 };
 
+//useful for drawing text-sized arrow, inverted is +1 for '^' and -1 for 'v'
 var drawArrow = function(arrowLoc,arrowHeight,inverted) {
 	line(arrowLoc,arrowHeight,arrowLoc+7,arrowHeight-8*inverted);
 	line(arrowLoc+1,arrowHeight,arrowLoc+8,arrowHeight-8*inverted);
@@ -87,10 +92,11 @@ var drawArrow = function(arrowLoc,arrowHeight,inverted) {
 	line(arrowLoc+15,arrowHeight,arrowLoc+8,arrowHeight-8*inverted);
 };
 
-/* A sett has an ID number from 1 to n^2, corresponding to the 
+/* 
+ * A sett has an ID number from 1 to n^2, corresponding to the 
  * numbered setts in the n^2 square of setts. 'Sett' converts that
  * number into an i,j location.
- * Sett also initialises a state for this numbered sett.
+ * Sett also initialises a state for this numbered sett, namely 'u'.
  */
 var Sett = function(settID) {
 	this.xloc = indexI(settID+1);
@@ -229,26 +235,38 @@ void draw() {
 	textAlign(CENTER);
 	//graphing parameters
 	var mG = 44;
-	var ymG = 44;
+	var ymG = 54;
 	var axisPoints = round(width/80);
 	var interval = (width-(2*mG))/axisPoints;
 	var nInterval = nsq/axisPoints;
 	var xInterval = round(maxYear/axisPoints);
+	var maxBadg = nsq*8.8;
+	var bInterval = maxBadg/axisPoints;
 	
-	line(width+110+mG,mG,width+110+mG,height-mG); //y axis
-	line(width+110+mG,height-mG,2*width+110-mG,height-mG); //x axis
+	line(width+110+ymG,mG,width+110+ymG,height-mG); //y axis
+	line(width+110+ymG,height-mG,2*width+110-ymG,height-mG); //x axis
 	strokeWeight(2);
+	line(2*width+110-ymG,mG,2*width+110-ymG,height-mG); //right hand y-axis
+	
+	
 	//Axes Labels
 	for (var i=0; i<axisPoints; i++) {
-		line(width+109+mG,mG+(i*interval),width+102+mG,mG+(i*interval));
-		text(round(nsq -(i*nInterval)),width+95+mG,mG+2+(i*interval));
-		line(width+110+mG+(i*interval),height-mG,width+110+mG+(i*interval),height-mG+7);
-		text(0+(i+1)*xInterval,width+115+mG+((i+1)*interval),height-mG+20);
+		//y-axis
+		line(width+109+ymG,mG+(i*interval),width+102+ymG,mG+(i*interval));
+		text(round(nsq -(i*nInterval)),width+95+ymG,mG+2+(i*interval));
+		//x-axis
+		line(width+110+ymG+(i*interval),height-mG,width+110+ymG+(i*interval),height-mG+7);
+		text(0+(i+1)*xInterval,width+115+ymG+((i+1)*interval),height-mG+20);
+		//y2-axis
+		line(2*width+110-ymG,mG+(i*interval),2*width+117-ymG,mG+(i*interval))
+		text(round(maxBadg-(i*bInterval)),2*width+140-ymG,mG+(i*interval));
 	}
-	line(width+110+mG,height-mG,width+102+mG,height-mG);
-	text(0,width+100+mG,mG+2+(i*interval));
-	line(2*width+110-mG,height-mG,2*width+110-mG,height-mG+7);
-	text(0,width+115+mG,mG+20+(i*interval));
+	line(width+110+ymG,height-mG,width+102+ymG,height-mG);
+	text(0,width+100+ymG,mG+2+(i*interval));
+	line(2*width+110-ymG,height-mG,2*width+110-ymG,height-mG+7);
+	text(0,width+115+ymG,mG+20+(i*interval));
+	line(2*width+110-ymG,mG+(i*interval),2*width+117-ymG,mG+(i*interval))
+	text(0,2*width+140-ymG,height-mG);
 	
 	textSize(16);
 	text("Time - Years",width*1.5+110,height-10);
@@ -260,16 +278,27 @@ void draw() {
 	rectMode(CENTER);
 	noStroke();
 	rect(0,-4,90,20);
+	rect(0,width-26,210,20);
 	fill(black);
 	text("No. of Setts",0,0);
+	rotate(3.14159265);
+	text("Estimated Badger Population",0,-width+30);
 	popMatrix();
 	
 	//correcting changes
 	rectMode(CORNER);
 	stroke(black);
 	strokeWeight(1);	
+
+	line(width+110+ymG,height-mG-((height-2*mG)*0.3),2*width+110-ymG,height-mG-((height-2*mG)*0.3));//30% level
+	stroke(white);
+	for(var i=0; i<30;i++){
+		line(width+112+ymG+i*20,height-mG-((height-2*mG)*0.3),width+115+ymG+i*20,height-mG-((height-2*mG)*0.3));
+	}
+
 	
 	fill(white);
+	stroke(black);
 	rect(width+11, height/2 - 110, 90, 140); //info box
 
 	rect(width+11, height/2 + 40, 90, 120); //lower button box
@@ -304,6 +333,7 @@ void draw() {
 	text("U = " + U, width+13, height/2 - 50);
 	text("P = " + P, width+13, height/2 - 35);
 	text("S = " + S, width+13, height/2 - 20);
+	text("B = " + round(B), width+13, height/2 - 5);
 	
 	strokeWeight(3);
 	//key for graph
@@ -314,6 +344,8 @@ void draw() {
 	stroke(0,0,255);
 	line(width+70,height/2-25,width+95,height/2-25);
 	stroke(black);
+	strokeWeight(2);
+	line(width+70,height/2-10,width+95,height/2-10);
 	strokeWeight(1);
 	//arrows for paramter control
 	drawArrow(width+28,height/2-246,1);
@@ -330,7 +362,7 @@ void draw() {
 	*/
 	
 	if(N<maxYear+1) {
-		settValues[N]=[U,P,S];
+		settValues[N]=[U,P,S,B];
 	}
 	
 	text("n is " + n, width + 13, height/2 - 145);
@@ -376,8 +408,8 @@ void draw() {
 		U = 0, P = 0, S = 0;
     	}
 	//update neighbours based on saturated
-    	for (var i = 0; i < nsq; i++) {
-        	setts1 = updateNeighs(setts1, i);
+    for (var i = 0; i < nsq; i++) {
+       	setts1 = updateNeighs(setts1, i);
 		if (setts1[i].state === 'u') {
 			U++;
 		} else if(setts1[i].state === 'p') {
@@ -385,7 +417,9 @@ void draw() {
 		} else {
 			S++;
 		}
-    	}
+    }
+	
+	B = S*8.8 + P*4.4;
 	//if we are running the simulation, this is where the maths is
 	if (run === 1 && (frameCount % frameUpdate) === 0) {
 		N++;
@@ -415,16 +449,22 @@ void draw() {
     }
 	
 	//graph drawing plots
-	for(var j=0;j<3;j++) {
+	for(var j=0;j<4;j++) {
 		noFill();
 		if(j==0){stroke(255,0,0);}
 		else if(j==1){stroke(0,255,0);}
-		else {stroke(0,0,255);}
+		else if(j==2){stroke(0,0,255);}
+		else {stroke(0,0,0);}
 		if(N<maxYear+1){
 			for(var i=0;i<=N;i+=1){
-				var tempX = width+110+mG+i*((width-(2*mG))/maxYear);
-				var tempY = width-ymG-settValues[i][j]*(((width-(2*ymG))/nsq));
-				ellipse(tempX,tempY,3,3);
+				var tempX = width+110+ymG+i*((width-(2*ymG))/maxYear);
+				if(j!==3){
+					var tempY = width-ymG-settValues[i][j]*(((width-(2*mG))/nsq));
+					ellipse(tempX,tempY,3,3);
+				} else {
+					var tempY = width-ymG-settValues[i][j]*(((width-(2*mG))/maxBadg));
+					ellipse(tempX,tempY,1.5,1.5);
+				}
 				if (i>0) {
 					line(tempX,tempY,oldX,oldY);
 				}
@@ -432,9 +472,14 @@ void draw() {
 			}
 		} else {
 			for(var i= 0;i<maxYear+1;i+=1) {
-				var tempX = width+110+mG+i*((width-(2*mG))/maxYear);
-				var tempY = width-ymG-settValues[i][j]*(((width-(2*ymG))/nsq));
-				ellipse(tempX,tempY,3,3);
+				var tempX = width+110+ymG+i*((width-(2*ymG))/maxYear);
+				if(j!==3){
+					var tempY = width-ymG-settValues[i][j]*(((width-(2*mG))/nsq));
+					ellipse(tempX,tempY,3,3);
+				} else {
+					var tempY = width-ymG-settValues[i][j]*(((width-(2*mG))/maxBadg));
+					ellipse(tempX,tempY,1.5,1.5);
+				}
 				if (i>0) {
 					line(tempX,tempY,oldX,oldY);
 				}
