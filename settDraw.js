@@ -572,21 +572,37 @@ void draw() {
 		N++;
 		for (var i = 0; i < nsq; i++) {
 			var num = random(0,1);
-			if (setts1[i].state === 'u') {
-				var prob = p * nu * 0.25 * setts1[i].neigh;
-				if(num < prob) {
-					setts1[i].state = 'p';
+			if (N <= cullUntil || cullMode === 0) {
+				if (setts1[i].state === 'u') {
+					var prob = p * nu * 0.25 * setts1[i].neigh;
+					if(num < prob) {
+						setts1[i].state = 'p';
+					}
+				} else if (setts1[i].state === 'p') {
+					var prob = lambda * p * nu * 0.25 * sigma * (1 - kappa) * setts1[i].neigh + kappa;
+					if(num < prob) {
+						setts1[i].state = 's';
+					}
 				}
-			} else if (setts1[i].state === 'p') {
-				var prob = lambda * p * nu * 0.25 * sigma * (1 - kappa) * setts1[i].neigh + kappa;
-				if(num < prob) {
-					setts1[i].state = 's';
+				if (setts1[i].state === 's' || setts1[i].state === 'p') {
+					if(random(0,1) < mu/2 ) {
+						setts1[i].state = 'u';
+					}
 				}
-			} else if (setts1[i].state === 's' && (N <= cullUntil || cullMode === 0) ) {
-				if(num < mu) {
-					setts1[i].state = 'u';
+			} else {
+				if (setts1[i].state === 'u') {
+					var prob = p * nu * 0.25 * setts1[i].neigh;
+					if(num < prob) {
+						setts1[i].state = 'p';
+					}
+				} else if (setts1[i].state === 'p') {
+					var prob = lambda * p * nu * 0.25 * sigma * (1 - kappa) * setts1[i].neigh + kappa;
+					if(num < prob) {
+						setts1[i].state = 's';
+					}
 				}
 			}
+			
 		}
 		
 	}
