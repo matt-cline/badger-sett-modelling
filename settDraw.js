@@ -18,9 +18,9 @@ var num = 0;		//random number check
 
 var U = 0, P = 0, S = 0;//initial sett counters
 var B = 0;	//will be used for total number of badgers
-var URat = 1, PRat = 1, SRat = 1;
+var URat = 1, PRat = 0, SRat = 0;
 
-var maxYear = 200;
+var maxYear = 400;
 var cullUntil = 50;
 var cullMode = 0;
 settValues = new Array(maxYear+1);
@@ -151,6 +151,9 @@ void mousePressed() {
 		N = 0;
 		frameCount = 0;
 		setts1 = randomSetts(setts1);
+		for(var i=0;i<maxYear;i++){
+			console.log(settValues[i][0]);
+		}
 	} else if (isInside(mouseX,mouseY,width+14, height/2 + 263, 84, 34)) {
 		//change cull mode
 		cullMode++;
