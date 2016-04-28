@@ -152,7 +152,7 @@ void mousePressed() {
 		frameCount = 0;
 		setts1 = randomSetts(setts1);
 		for(var i=0;i<maxYear;i++){
-			console.log(settValues[i][0]);
+			console.log(settValues[i][2]);
 		}
 	} else if (isInside(mouseX,mouseY,width+14, height/2 + 263, 84, 34)) {
 		//change cull mode
